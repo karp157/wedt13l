@@ -1,0 +1,21 @@
+# Java class
+*.class
+
+# Idea specific
+.idea/*
+*.iml
+
+## generic files to ignore
+*~
+*.lock
+*.DS_Store
+*.swp
+*.out
+*.log
+
+## elasticsearch specific
+elasticsearch/
+
+# latex specfic
+*.aux
+_region*
