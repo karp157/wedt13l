@@ -4,6 +4,13 @@
 # Idea specific
 .idea/*
 *.iml
+target
+
+
+#Eclipse specific
+.classpath
+.project
+.settings
 
 ## generic files to ignore
 *~
