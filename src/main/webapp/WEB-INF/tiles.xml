@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE tiles-definitions PUBLIC
+        "-//Apache Software Foundation//DTD Tiles Configuration 2.0//EN"
+        "http://tiles.apache.org/dtds/tiles-config_2_0.dtd">
+<tiles-definitions>
+    <definition name="index" template="/WEB-INF/pages/index.jsp">
+        <put-attribute name="header" value="/WEB-INF/pages/header.jsp"/>
+        <put-attribute name="body" value="/WEB-INF/pages/body.jsp"/>
+        <put-attribute name="footer" value="/WEB-INF/pages/footer.jsp"/>
+    </definition>
+
+    <definition name="search" extends="index">
+        <put-attribute name="body" value="/WEB-INF/pages/search/index.jsp"/>
+    </definition>
+    <definition name="searchForm" template="/WEB-INF/pages/search/form.jsp"/>
+    <definition name="searchResult" template="/WEB-INF/pages/search/result.jsp"/>
+
+</tiles-definitions>

@@ -1,12 +1,11 @@
-package pl.edu.pw.elka.postsearch;
+package pl.edu.pw.elka.postsearch.view;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 public class MainController
@@ -14,9 +13,8 @@ public class MainController
     private static final Logger LOG = LoggerFactory.getLogger(MainController.class);
 
 	@RequestMapping("/")
-	public String mainRender(Model model)
+	public ModelAndView mainRender()
 	{
-        model.addAttribute("message", "Witajta");
-		return "hello";
+        return new ModelAndView("search");
 	}
 }
