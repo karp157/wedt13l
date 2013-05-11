@@ -19,6 +19,36 @@ Opis Opis Opis Opis Opis Opis Opis Opis Opis Opis Opis Opis Opis Opis Opis Opis 
     </div>
 </div>
 
+<div class="row">
+    <div class="span2"></div>
+    <div class="span8">
+        <pre style="text-align: left">
+<strong><a href="#">Tweet bardzo ważny</a></strong>
+Opis Opis Opis Opis Opis Opis Opis Opis Opis Opis Opis Opis Opis Opis Opis Opis Opis OpisOpis Opis Opis Opis Opis Opis Opis Opis Opis Opis Opis Opis Opis Opis Opis Opis Opis Opis Opis
+        </pre>
+    </div>
+</div>
+
+<div class="row">
+    <div class="span2"></div>
+    <div class="span8">
+        <pre style="text-align: left">
+<strong><a href="#">Tweet bardzo ważny</a></strong>
+Opis Opis Opis Opis Opis Opis Opis Opis Opis Opis Opis Opis Opis Opis Opis Opis Opis OpisOpis Opis Opis Opis Opis Opis Opis Opis Opis Opis Opis Opis Opis Opis Opis Opis Opis Opis Opis
+        </pre>
+    </div>
+</div>
+
+<div class="row">
+    <div class="span2"></div>
+    <div class="span8">
+        <pre style="text-align: left">
+<strong><a href="#">Tweet bardzo ważny</a></strong>
+Opis Opis Opis Opis Opis Opis Opis Opis Opis Opis Opis Opis Opis Opis Opis Opis Opis OpisOpis Opis Opis Opis Opis Opis Opis Opis Opis Opis Opis Opis Opis Opis Opis Opis Opis Opis Opis
+        </pre>
+    </div>
+</div>
+
 <script type="text/javascript">
     $(function() {
     });
