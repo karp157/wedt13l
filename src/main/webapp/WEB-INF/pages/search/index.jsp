@@ -4,6 +4,6 @@
 <div class="post-search-form">
     <tiles:insertDefinition name="searchForm"/>
 </div>
-<div class="post-search-result">
+<div class="post-search-results" >
     <tiles:insertDefinition name="searchResult"/>
 </div>

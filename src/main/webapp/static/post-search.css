@@ -1,0 +1,39 @@
+.post-search {
+    padding-top: 100px;
+}
+
+.post-search-main {
+    text-align: center;
+}
+
+.post-search-header {
+}
+
+.post-search-main .post-search-body {
+
+}
+
+.post-search-footer {
+    background-color: #ededed;
+}
+
+.post-search-main .post-search-body .search-form {
+
+}
+
+.post-search-main .post-search-body .search-result {
+
+}
+
+.post-search-results {
+    /*padding-left: 200px; *//* To jest obrzydliwe */
+    /*width: 500px; wyznaczone przez bootstrapowe spany*/
+}
+.post-search-result {
+    text-align: left;
+}
+
+.post-search-alert {
+   text-align: left;
+}
+
