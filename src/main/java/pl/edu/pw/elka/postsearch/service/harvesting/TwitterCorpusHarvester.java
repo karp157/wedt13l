@@ -79,10 +79,12 @@ public class TwitterCorpusHarvester implements Harvester<Posts> {
             i++;
         }
 
-        for (; i < pageSize; ++i) {
-            String post = readLine();
+        String post = readLine();
+        for (; i < pageSize && post != null; ++i) {
             posts.add(post);
+            post = readLine();
         }
+
         return readPosts(posts);
     }
 
@@ -106,10 +108,10 @@ public class TwitterCorpusHarvester implements Harvester<Posts> {
         try {
             post = new Post(readCreationDate(parts[0]),
                     Long.parseLong(parts[1]),
-                    new User(parts[2], new URL(parts[8])),
+                    new User(parts[2], parts[8]),
                     parts[3],
                     parts[6]);
-        } catch (ParseException | MalformedURLException | NumberFormatException e) {
+        } catch (ParseException | NumberFormatException e) {
             throw new InvalidPostException(e.getMessage());
         }
         return post;

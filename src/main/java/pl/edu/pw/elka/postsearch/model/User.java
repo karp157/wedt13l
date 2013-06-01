@@ -7,11 +7,11 @@ import java.net.URL;
  */
 public class User {
     private String username;
-    private URL avatarURL;
+    private String avatarURL;
 
     protected User() {/** empty by design */}
 
-    public User(final String username, final URL avatarURL) {
+    public User(final String username, final String avatarURL) {
         this.username = username;
         this.avatarURL = avatarURL;
     }
@@ -24,11 +24,11 @@ public class User {
         this.username = username;
     }
 
-    public URL getAvatarURL() {
+    public String getAvatarURL() {
         return avatarURL;
     }
 
-    public void setAvatarURL(final URL avatarURL) {
+    public void setAvatarURL(final String avatarURL) {
         this.avatarURL = avatarURL;
     }
 

@@ -1,15 +1,20 @@
 package pl.edu.pw.elka.postsearch.model;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.elasticsearch.annotations.Document;
+
 import java.util.Date;
 
 /**
  * Bean przechowujący informacje posta (wiadomości).
  */
+@Document(indexName = "twitter", type = "post")
 public class Post {
+    /** Id wiadomości. */
+    @Id
+    private Long id;
     /** Data utworzenia wiadomości w serwisie twitter. */
     private Date creationDate;
-    /** Id wiadomości. */
-    private Long id;
     /** Autor wiadomości */
     private User user;
     /** Treść wiadomości. */

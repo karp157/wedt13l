@@ -27,23 +27,14 @@ public class TwitterCorpusHarvesterTest extends AbstractTestNGSpringContextTests
     @Autowired
     private ApplicationContext context;
 
+    @Autowired
+    private Post post1;
+    @Autowired
+    private Post post2;
+
     @BeforeMethod
     public void setUp() throws Exception {
-        Date date = CREATION_DATE_SDF.parse("20081025");
-        expectedList = Arrays.asList(new Post(date,
-                152517L,
-                new User("GnarleyCharley", new URL("http://a3.twimg.com/profile_images/252328289/101_2280_normal.jpg")),
-                "is going around renaming things so they all start with an \"i\" before Apple does it..iToaster, his iToilet, and his ipatch and iDOG.all set.",
-                "en"
-        ),
-                new Post(date,
-                        161252L,
-                        new User("lsbuffs", new URL("http://a1.twimg.com/profile_images/300319856/P5300144_normal.JPG")),
-                        "Frogger available in iPhone app store for $.99 #apple",
-                        "it"
-                )
-        );
-
+        expectedList = Arrays.asList(post1, post2);
     }
 
     @Test

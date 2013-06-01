@@ -12,6 +12,9 @@
     <definition name="search" extends="index">
         <put-attribute name="body" value="/WEB-INF/pages/search/index.jsp"/>
     </definition>
+    <definition name="harvest" extends="index">
+        <put-attribute name="body" value="/WEB-INF/pages/harvest/index.jsp"/>
+    </definition>
     <definition name="searchForm" template="/WEB-INF/pages/search/form.jsp"/>
     <definition name="searchResult" template="/WEB-INF/pages/search/result.jsp"/>
 
