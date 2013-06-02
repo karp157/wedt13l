@@ -2,6 +2,7 @@ package pl.edu.pw.elka.postsearch.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -18,7 +19,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 @Controller
-public class ImportController {
+public class ImportController extends PostSearchAbstractController {
 
     @Autowired
     private PostIndexRepository postIndexRepository;
@@ -44,9 +45,13 @@ public class ImportController {
 
         final TwitterCorpusHarvester harvester = new TwitterCorpusHarvester(new InputStreamReader(inputStream), pageSize);
 
+        long count = 0l;
         for (Posts posts : harvester) {
+            count += posts.getPostList().size();
             postIndexRepository.save(posts.getPostList());
         }
+
+        modelAndView.addObject(MESSAGE, "Zaimportowano %size% post(ów)".replace("%size%", Long.toString(count)));
 
         return modelAndView;
     }

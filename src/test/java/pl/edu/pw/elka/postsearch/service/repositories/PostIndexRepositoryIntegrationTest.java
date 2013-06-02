@@ -1,5 +1,6 @@
 package pl.edu.pw.elka.postsearch.service.repositories;
 
+import org.junit.Ignore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 import org.springframework.test.context.ContextConfiguration;
@@ -15,6 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @ContextConfiguration("classpath:post-search-test-context.xml")
+@Ignore
 public class PostIndexRepositoryIntegrationTest extends AbstractTestNGSpringContextTests {
 
     @Resource

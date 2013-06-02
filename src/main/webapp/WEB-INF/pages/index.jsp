@@ -1,4 +1,5 @@
 <%@ taglib prefix="tiles" uri="http://tiles.apache.org/tags-tiles" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%--Strona glowna--%>
 <!DOCTYPE html>
@@ -12,6 +13,7 @@
     <title>post search - szukaj posty z serwisu tweeter</title>
     <script src="/static/jquery/jquery-1.9.1.js"></script>
     <script src="/static/bootstrap/js/bootstrap.js"></script>
+    <script src="/static/infiniScroll.js"></script>
     <link rel="stylesheet" type="text/css" href="/static/bootstrap/css/bootstrap.css"/>
     <link rel="stylesheet" type="text/css" href="/static/post-search.css"/>
 </head>
@@ -20,6 +22,17 @@
     <header class="post-search-main post-search-header page-header">
         <tiles:insertAttribute name="header"/>
     </header>
+
+    <c:if test="${not empty message}">
+        <div class="row">
+            <div class="span3"></div>
+            <div class="span5 alert alert-info post-search-alert fade in">
+                ${message}
+                <button type="button" class="close" data-dismiss="alert">x</button>
+            </div>
+        </div>
+    </c:if>
+
     <div class="post-search-main">
         <tiles:insertAttribute name="body"/>
     </div>
