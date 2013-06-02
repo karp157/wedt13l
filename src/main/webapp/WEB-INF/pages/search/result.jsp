@@ -30,7 +30,7 @@ ${post.message}
 
 <script type="text/javascript">
     $(function () {
-        <c:if test="${not empty query}">
+        <c:if test="${query != null}">
 
         $("#posts").infiniScroll({
             'interval'     : 100

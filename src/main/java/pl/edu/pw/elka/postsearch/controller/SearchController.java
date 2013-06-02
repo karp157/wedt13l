@@ -1,5 +1,6 @@
 package pl.edu.pw.elka.postsearch.controller;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -35,7 +36,12 @@ public class SearchController extends PostSearchAbstractController {
                                Pageable pageable) {
         final ModelAndView modelAndView = new ModelAndView("search");
 
-        Page<Post> posts = postSearchRepository.findByMessage (query, pageable);
+        Page<Post> posts;
+        if ("".equals(StringUtils.trim(query))) {
+            posts = postSearchRepository.findAll(pageable);
+        } else {
+            posts = postSearchRepository.findByMessage(query, pageable);
+        }
 
         modelAndView.addObject("query", query);
         modelAndView.addObject("postsPage", posts);
