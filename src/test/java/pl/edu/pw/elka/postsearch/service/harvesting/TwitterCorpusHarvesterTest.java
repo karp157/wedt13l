@@ -40,7 +40,7 @@ public class TwitterCorpusHarvesterTest extends AbstractTestNGSpringContextTests
     @Test
     public void testSimpleAppleTest() throws Exception {
         Resource testFile = context.getResource("classpath:harvesting/apple_test");
-        instance = new TwitterCorpusHarvester(testFile.getFile(), 2);
+        instance = new TwitterCorpusHarvester(testFile.getFile(), 2, "en");
         Posts expected = new Posts(expectedList);
         Posts actual = instance.next();
 
@@ -50,7 +50,7 @@ public class TwitterCorpusHarvesterTest extends AbstractTestNGSpringContextTests
     @Test
     public void testHasNext() throws Exception {
         Resource testFile = context.getResource("classpath:harvesting/apple_test");
-        instance = new TwitterCorpusHarvester(testFile.getFile(), 1);
+        instance = new TwitterCorpusHarvester(testFile.getFile(), 1, "en");
 
         for(int i = 0; i < 10; ++i) {
             PostSearchAssert.assertTrue(instance.hasNext());

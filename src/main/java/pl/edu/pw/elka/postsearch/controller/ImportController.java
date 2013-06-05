@@ -42,8 +42,9 @@ public class ImportController extends PostSearchAbstractController {
 
         final InputStream inputStream = fileUpload.getMultipartFile().getInputStream();
         final Integer pageSize = fileUpload.getPageSize();
+        final String countryCode = fileUpload.getCountryCode();
 
-        final TwitterCorpusHarvester harvester = new TwitterCorpusHarvester(new InputStreamReader(inputStream), pageSize);
+        final TwitterCorpusHarvester harvester = new TwitterCorpusHarvester(new InputStreamReader(inputStream), pageSize, countryCode);
 
         long count = 0l;
         for (Posts posts : harvester) {

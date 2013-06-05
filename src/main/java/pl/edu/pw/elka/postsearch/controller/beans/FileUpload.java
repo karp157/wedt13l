@@ -5,6 +5,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class FileUpload {
     private MultipartFile multipartFile;
     private Integer pageSize;
+    private String countryCode;
 
     public FileUpload() {
     }
@@ -27,5 +28,13 @@ public class FileUpload {
 
     public void setPageSize(final Integer pageSize) {
         this.pageSize = pageSize;
+    }
+
+    public String getCountryCode() {
+        return countryCode;
+    }
+
+    public void setCountryCode(final String countryCode) {
+        this.countryCode = countryCode;
     }
 }

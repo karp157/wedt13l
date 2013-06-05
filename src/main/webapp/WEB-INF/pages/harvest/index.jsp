@@ -24,6 +24,14 @@
                        placeholder=";-)"/>
             </div>
         </div>
+        <div class="control-group">
+            <label class="control-label post-search-form-label" for="countryCode" style="font: bold">Kod językowy</label>
+
+            <div class="controls">
+                <form:input path="countryCode" type="text" id="countryCode" class="input-mini"
+                            placeholder="en"/>
+            </div>
+        </div>
         <button type="submit" class="btn">Prześlij</button>
     </fieldset>
 </form:form>

@@ -1,0 +1,35 @@
+{
+  "twitter" : {
+    "post" : {
+      "properties" : {
+        "countryCode" : {
+          "type" : "string",
+          "index" : "not_analyzed"
+        },
+        "creationDate" : {
+          "type" : "date",
+	  "index" : "not_analyzed"
+        },
+        "id" : {
+          "type" : "long",
+	  "index" : "no"
+        },
+        "message" : {
+          "type" : "string"
+        },
+        "user" : {
+          "properties" : {
+            "avatarURL" : {
+              "type" : "string",
+	      "index" : "not_analyzed"
+            },
+            "username" : {
+              "type" : "string",
+	      "index" : "not_analyzed"
+            }
+          }
+        }
+      }
+    }
+  }
+}
