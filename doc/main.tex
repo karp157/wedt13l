@@ -1,0 +1,228 @@
+\documentclass[runningheads]{llncs}
+
+\usepackage{polski} 
+\usepackage[utf8x]{inputenc}
+\usepackage[T1]{fontenc}
+%\usepackage{makeidx}  % TODO włączyć indeks artykułu
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{times}
+
+\begin{document} 
+\pagestyle{headings} \addtocmark{}
+%-% POCZĄTEK ARTYKUŁU
+% 
+\title{Wyszukiwarka postów na Twitterze}
+% 
+\titlerunning{Wyszukiwarka postów na Twitterze }
+% 
+\author{Piotr Jarosik, Michał Karpiuk, Marcin Wlazły}
+% 
+\authorrunning{Piotr Jarosik, Michał Karpiuk, Marcin Wlazły}
+% 
+\institute{Wydział Elektroniki i~Technik Informacyjnych\\
+  Politechnika Warszawska\\
+  \email{P.Jarosik@stud.elka.pw.edu.pl}\\
+  \email{M.Karpiuk.1@stud.elka.pw.edu.pl}\\
+  \email{M.Wlazly@stud.elka.pw.edu.pl}}
+\maketitle
+\begin{abstract}
+Miejsce na abstrakt\ldots
+\keywords{wyszukiwarka postów, twitter, elasticsearch}
+\end{abstract}
+
+Celem projektu była implementacja prostej wyszukiwarki tekstowej. Wyszukiwarka
+zawierać podstawowe mechanizmy odporności na błędy w zapytaniach i treści postów
+oraz uwzględnia niejednoznaczności słów (homonimy, synomimy). 
+Aplikacja zrealizowana w ramach projektu posiada intuicyjny
+i prosty interfejs przeglądarkowy.
+
+W ramach projektu zrealizowane zostało wyszukiwanie postów Twittera 
+z wykorzystaniem indeksera tekstowego opartego na silniku Lucene.
+
+\section{Wykorzystane narzędzia}
+\label{sec:wykorzystane-narzedzia}
+
+Projekt został zaimplementowany w języku Java.
+
+W ramach tego projektu opracowana została aplikacja webowa z wykorzystaniem 
+technologii JEE. Zastosowano szkielet aplikacyjny Spring Framework, w
+szczególności:
+w warstwie prezentacji: 
+Spring Web MVC oraz Apache Tiles, widoki użytkownika generowane są z plików JSP;
+w warstwie dostępu do danych (przechowywanych w indekserze):
+Zastosowano narzędzie Spring Data, które umożliwia przygotowanie abstrakcji 
+repozytorium danych. W Spring Data  nie ma potrzeby pisania własnych zapytań
+(np. obiektów w formacie JSON do indeksera) - zapytania  są przygotowywane
+automatycznie na podstawie nazw metod interfejsu repozytorium.  Spring Data może
+być również zastosowany m.in. w relacyjnych oraz grafowych bazach danych.
+
+Elasticsearch
+
+W ramach projektu zastosowano indekser Elasticsearch. Podstawę działania tego
+narzędzia stanowi biblioteka Lucene. Elasticsearch działa jako całkowicie 
+niezależna usługa w systemie, nie ma więc konieczności jego  uruchmiania w
+serwerze aplikacyjnym  (jak jest to np. w Solr). Komunikacja  między indekserem
+a aplikacją odbywa się poprzez interfejs REST-owy, za pomocą  komunikatów
+zapisanych w formacie JSON. W szczególności, dokumenty zapisywane  do indeksu
+muszą być obiektami zgodnymi z tą notacją.
+Elasticsearch posiada wiele innowacyjnych rozwiązań,  wynikających z bardzo
+dużej liczby wtyczek (plugin’s) przygotowywanych przez  deweloperów z całego
+świata. Szczególną ciekawą funkcją tego narzędzia są perkolacje  -  możliwe jest
+wykonanie odwróconego zapytania. W indeksie można zapisać różne  frazy
+wyszukiwania, a następnie przekazać do elasticsearch dokument, w  celu
+znalezienia wszystkich zapisanych fraz, które  są relewantne dla wprowadzonego
+dokumentu. W ten sposób można np. w prosty sposób wykonać  klasyfikację
+dokumentów wprowadzanych przez użytkowników systemu.
+
+\section{Indeksowanie danych wejściowych}
+\label{sec:indeksowanie-danych-wejsciowych}
+W ramach projektu wykorzystany został korpus tekstowy, który składa się z dwóch
+zbiorów postów z portalu Twitter, dotyczących różnych tematyk\footnote{
+\url{http://an.kaist.ac.kr/~haewoon/release/twitter_tweets/}}.
+
+Posty niezapisane w języku angielskim nie są uwzględniane w dalszym
+przetwarzaniu. 
+Do rozpoznawanie  języka w jakim zostały napisane posty zastosowano
+odpowiednie rozszerzenie dla elasticsearch,  przeznaczone do identyfikacji
+języka tekstu
+\footnote{\url{https://github.com/jprante/elasticsearch-langdetect}}.
+
+Dane, przed zaindeksowaniem, zostały oczyszczone z nieistotnych elementów (z
+punktu widzenia realizacji wyszukiwania), takich jak odnośniki do  zdjęć czy
+zewnętrznych stron. Ponadto poddane zostały działaniu elementów standardowego
+analizatora Lucene, tj:
+\begin{itemize}
+  \item standardowy tokenizer implementujący algorytm segmentacji tekstu Unicode
+  (Unicode Text Segmentation algorithm)
+  \item filtr dla stop words
+  \item filtr zmieniający litery na małe
+  \item filtr normalizujący tokeny
+\end{itemize}
+Dodatkowo, zastosowane zostały następujące filtry tokenów:
+\begin{itemize}
+  \item stemmer dla języka angielskiego
+  \item filtr do przygotowywania bigramów z danych wejściowych (shingle filter z
+  biblioteki Lucene)
+  \item filtr uwzględniający synonimy wyrazów
+\end{itemize}
+
+Aby skorzystać z tego ostatniego, konieczne było przygotowanie pliku z
+synonimami w formacie akceptowalnym przez Solr. Niezbędne było więc skorzystanie
+ze słownika języka angielskiego.
+
+W ramach projektu wykorzystane zostały dane z anglojęzycznej wersji wikisłownika
+(wiktionary), w szczególności:
+\begin{itemize}
+  \item synonimy (niezbędne dla wskazanego wcześniej filtru analizatora)
+  \item kolokacje
+\end{itemize}
+
+Kolokacje niezbędne są do określania kontekstu występowania danego słowa. 
+Uwzględniane są w momencie wykonywania zapytania: jeżeli podana fraza zawiera
+wystąpienie jakiegoś ciągu słów, który  prawdpodobnie jest kolokacją, nie są
+dla niego uwzględniane m.in. synonynimy poszczególnych cześci składowych.
+
+\section{Wyszukiwanie informacji w indeksach}
+\label{sec:wyszukiwanie-informacji-w-indeksach}
+Zarówno indeksowane dokumenty, jak i zapytania zostały poddane działaniu tych
+samych analizatorów Lucene.
+Do obsługi błędów w zapytaniach  wykorzystano suggester termów (nowa
+funkcjonalność elasticsearch’a, ciągle jeszcze w fazie beta:
+\url{http://www.elasticsearch.org/guide/reference/api/search/suggest/}), który
+na podstawie podanej frazy oraz na podstawie zaindeksowanych  postów podaje
+sugestie dla prawdopodobnie błędnych wyrazów, tj. słowa  z dokumentów
+przechowywanych w indeksie najbliższe do podanego ciągu wyrazów. Np.  dla frazy
+“spatła kedytu” użytkownik otrzyma informację, iż prawdopodobnie chodziło mu o
+frazę “spłata kredytu”.
+
+Suggester termów wykorzystany został również przed zaindeksowaniem postów (w
+sytuacjach gdy było to konieczne).
+Dla każdego wyrazu, który jest z prawdopodobnie błędny, uwzględniona jest
+propozycja od suggester’a. To, czy dane słowo zostało uznane za błędne,
+wyznacza wartość progowa odległości słowa z zapytania do  proponowanego przez
+suggester wyrazu. Parametr ten został ustalony  w trakcie eksperymentowania z
+wyszukiwaniem zaindeksowanych danych. 
+
+%TODO zrobiliśmy to poniżej?
+%Docelowo chcemy wyeliminować typowe błędy (literówki)  jeszcze przed
+% zaindeksowaniem oryginalnego tekstu.
+
+W celu zaakcentowania wystąpień wpisanej frazy w wynikach wyszukiwania,  w
+ramach projektu zastosowany został highlighting dostępny w indekserze
+elasticsearch.
+
+Użytkownik końcowy ma możliwość wpisania frazy do wyszukiwania w
+specjalnie przygotowanym do tego formularzu. W odpowiedzi wyświetlana jest lista
+pasujących do zapytania postów. Wyniki wyszukiwania jest stronicowana, tj.
+na jednej stronie będzie można wyświetlić pewną określoną,  maksymalną liczbę
+wyników. Do stronicowania została wykorzystana technologia AJAX dzięki czemu
+posty wczytują się dynamicznie, a użytkownik nie musi za każdym razem
+przeładowywać strony. Każdy wynik wyszukiwania zawiera:
+treść postu, datę utworzenia oraz nazwę autora.  Możliwe jest również
+posortowanie otrzymanych dokumentów wg r elewantności dokumentu lub daty jego
+utworzenia w serwisie Twitter.
+
+\section{Metody testowania}
+\label{sec:metody-testowania}
+
+Do testów zostały wykorzystane wyselekcjonowane posty pobrane z portalu
+\url{twitter.com}.
+Na danych testowych przeprowadzone zostały testy jakości wyszukiwania oraz testy
+wydajnościowe. Testy wykonane na stowrzonej aplikacji zostały zaprezentowane w
+kolejnych podrozdziałach:
+\subsection{Testy jednostkowe}
+Testy jednostkowe zostały przeprowadzone z wykorzystaniem framework’a TestNG.
+Jest to ciekawy szkielet aplikacyjny stanowiący alternatywę dla biblioteki
+JUnit. Umożliwia on elastyczną konfigurację testów, wykorzystuje się go przy
+pomocy adnotacji Java.
+ 
+ \subsection{Testy jakościowe}
+ Testy jakościowe - wybrane posty zostały wstępnie ręcznie przeczytane i 
+  zapisane zostały wystąpienia słów oraz synonimów zawartych w testowych
+  postach.
+	Sprawdzenie skuteczności polegało na użyciu wyszukiwarki na  tych testowych
+	postach i porównaniu wyników wyszukiwania z wynikami powstałymi  na skutek
+	ręcznego przeglądania postów. W wyniku tych testów zostały policzone  metryki
+	precision oraz  recall. Policzone ze wzorów:
+  
+
+\begin{equation}
+	precision = \frac{TA}{TA + FA}
+\end{equation}
+\begin{equation}
+	recall = \frac{TA}{TA + FB}
+\end{equation}
+Gdzie: 
+
+	$TA$: posty poprawnie zakwalfikowane do klasy $A$
+	
+	$FA$: posty niepoprawnie zakwalfikowane do klasy $A$
+	
+	$TB$: posty poprawnie zakwalfikowane do klasy $B$
+	
+	$FB$: posty niepoprawnie zakwalfikowane do klasy $B$
+	
+Precyzja (\textit{ang.} Precision)  określa jaka część obiektów
+zaklasyfikowanych pozytywnie, jest taka  w rzeczywistości. Innymi słowy jest to
+prawdopodobieństwo tego, że obiekt faktycznie jest  pozytywny, jeśli został
+uznany jako taki przez system.
+Zupełność, kompletność (\textit{ang.} Recall) Jest to miara odpowiadająca na
+pytanie, jaką część faktycznie pozytywnych obiektów, system zaklasyfikował poprawnie.
+
+Istnieje pewna zależność pomiędzy tymi miarami. 
+
+
+\subsection{Testy wydajnościowe}
+Testy wydajnościowe miały zostać przeprowadzone  za pomocą frameworka The
+Grinder, który 
+umożliwia łatwe i szybkie  tworzenie  testów wydajnościowych, w tym również
+na oszacowanie wydajności systemu w przypadku  jego użycia przez wielu
+użytkowników jednocześnie. Ze względu na brak miarodajnego środowiska
+deweloperskiego (odpowiadającego środowisku produkcyjnemu) nie udało się
+przeprowadzić testów wydajnościowych.
+
+\clearpage
+\end{document}
