@@ -2,6 +2,8 @@ package pl.edu.pw.elka.postsearch.service.harvesting;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.elasticsearch.common.joda.time.format.DateTimeFormatter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import pl.edu.pw.elka.postsearch.commons.exceptions.InvalidPostException;
 import pl.edu.pw.elka.postsearch.commons.validator.Validator;
 import pl.edu.pw.elka.postsearch.model.Post;
@@ -37,22 +39,25 @@ import java.util.List;
  * Na wyjściu otrzymujemy niewyescapeowany post.
  */
 public class TwitterCorpusHarvester implements Harvester<Posts> {
+    private static final Logger LOG = LoggerFactory.getLogger(TwitterCorpusHarvester.class);
     public static final SimpleDateFormat CREATION_DATE_SDF = new SimpleDateFormat("yyyyMMdd");
     private final Integer pageSize;
+    private final String countryCode;
     private BufferedReader bufferedReader;
     private String lastPost = null;
 
-    public TwitterCorpusHarvester(final Reader reader, final Integer pageSize) {
+    public TwitterCorpusHarvester(final Reader reader, final Integer pageSize, final String countryCode) {
         this.pageSize = pageSize;
+        this.countryCode = countryCode;
         this.bufferedReader = new BufferedReader(reader);
     }
 
-    public TwitterCorpusHarvester(final File file, final Integer pageSize) throws FileNotFoundException {
-        this(new FileReader(file), pageSize);
+    public TwitterCorpusHarvester(final File file, final Integer pageSize, final String countryCode) throws FileNotFoundException {
+        this(new FileReader(file), pageSize, countryCode);
     }
 
-    public TwitterCorpusHarvester(final String filename, final Integer pageSize) throws FileNotFoundException {
-        this(new File(filename), pageSize);
+    public TwitterCorpusHarvester(final String filename, final Integer pageSize, final String countryCode) throws FileNotFoundException {
+        this(new File(filename), pageSize, countryCode);
     }
 
     @Override
@@ -94,12 +99,16 @@ public class TwitterCorpusHarvester implements Harvester<Posts> {
     private Posts readPosts(final List<String> postsData) throws InvalidPostException {
         Posts posts = new Posts();
         for (final String post : postsData) {
-            posts.add(readPost(post));
+            Post newPost = readPost(post);
+            if (newPost.getCountryCode().equals(countryCode)) {
+                posts.add(newPost);
+            }
         }
         return posts;
     }
 
     private Post readPost(final String postData) throws InvalidPostException {
+        LOG.debug("Harvesting data: {}", postData);
         final String postDataAfterDecoding = StringEscapeUtils.unescapeHtml(postData);
         final String[] parts = postDataAfterDecoding.split("\t");
         Validator.assertTrue(parts.length == 11,
@@ -114,6 +123,7 @@ public class TwitterCorpusHarvester implements Harvester<Posts> {
         } catch (ParseException | NumberFormatException e) {
             throw new InvalidPostException(e.getMessage());
         }
+        LOG.debug("Harvested post: {}", post);
         return post;
     }
 

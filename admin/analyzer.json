@@ -1,0 +1,16 @@
+{ 
+"analysis" : {
+    "analyzer": {
+      "default": {
+        "tokenizer":"uax_url_email",
+        "filter":["lowercase", "stop", "synonym" , "stemmer", "shingle"]
+         }
+      },
+      "filter" : {
+       "synonym" : {
+          "type" : "synonym",
+          "synonyms_path" : "analysis/synonyms.txt"
+     }
+    }
+  }
+}
