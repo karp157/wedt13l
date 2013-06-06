@@ -214,7 +214,18 @@ uznany jako taki przez system.
 Zupełność, kompletność (\textit{ang.} Recall) Jest to miara odpowiadająca na
 pytanie, jaką część faktycznie pozytywnych obiektów, system zaklasyfikował poprawnie.
 
-Istnieje pewna zależność pomiędzy tymi miarami. 
+W ostateczności nie zdecydowaliśmy się na próby  obliczania miar poprawności
+takich jak precyzja czy zupełność. Byłoby to  wyjątkowo trudnym zadaniem, biorąc
+pod uwagę fakt, że wyniki testów w bardzo dużym  stopniu zależałyby od
+skomplikowania zapytania, co również jest kwestią  subiektywną. Takie wyniki
+były by raczej mało precyzyjne. Ponadto aby obliczyć  wskaźnik zupełności
+niezbędna jest wiedza o wszystkich poprawnych przypadkach  postów w korpusie, w
+kontekście danego zapytania. Taką wiedzę można zdobyć  uważnie przeglądając
+wszystkie posty, jednak nakład pracy potrzebny na jej  zdobycie jest
+zdecydowanie nieakceptowalny. Z drugiej strony  ograniczenie zbioru testowego do
+wielkości umożliwiającej zapanowanie nad testami bardzo zmniejszyłoby
+dokładność.
+
  
 
 \subsection{Testy wydajnościowe}
