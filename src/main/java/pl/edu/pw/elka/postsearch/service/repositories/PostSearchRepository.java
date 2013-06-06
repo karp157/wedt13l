@@ -7,6 +7,6 @@ import org.springframework.data.elasticsearch.repository.ElasticsearchRepository
 import pl.edu.pw.elka.postsearch.model.Post;
 
 public interface PostSearchRepository extends ElasticsearchRepository<Post, Long> {
-    @Query("{\"match\" : {\"message\" : \"?0\"}}")
+    @Query("{\"match\" : {\"message\" : {\"query\" : \"?0\"}}}")
     Page<Post> findByMessage(final String message, final Pageable pageable);
 }

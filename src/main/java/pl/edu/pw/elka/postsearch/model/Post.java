@@ -19,9 +19,9 @@ public class Post {
     private User user;
     /** Treść wiadomości. */
     private String message;
-//    private String followers; TODO dodać kiedy będzie to istotne
     /** Kod kraju pochodzenia wiadomości. */
     private String countryCode;
+    private String rawMessage;
 
     protected Post() {/** Empty by design */}
 
@@ -30,6 +30,7 @@ public class Post {
         this.id = id;
         this.user = user;
         this.message = message;
+        this.rawMessage = message;
         this.countryCode = countryCode;
     }
 
@@ -71,6 +72,14 @@ public class Post {
 
     public void setCountryCode(final String countryCode) {
         this.countryCode = countryCode;
+    }
+
+    public String getRawMessage() {
+        return rawMessage;
+    }
+
+    public void setRawMessage(final String rawMessage) {
+        this.rawMessage = rawMessage;
     }
 
     @Override

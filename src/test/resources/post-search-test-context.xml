@@ -12,6 +12,7 @@
     <bean name="elasticsearchTemplate" class="org.springframework.data.elasticsearch.core.ElasticsearchTemplate">
         <constructor-arg name="client" ref="client"/>
     </bean>
+    <!--<bean name="suggestService" class="pl.edu.pw.elka.postsearch.service.repositories.SuggestService"/>-->
 
     <elasticsearch:repositories base-package="pl.edu.pw.elka.postsearch.service.repositories"/>
 

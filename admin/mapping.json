@@ -1,5 +1,4 @@
 {
-  "twitter" : {
     "post" : {
       "properties" : {
         "countryCode" : {
@@ -17,6 +16,10 @@
         "message" : {
           "type" : "string"
         },
+	"rawMessage" : {
+	  "type" : "string",
+	  "analyzer" : "standard"
+        },
         "user" : {
           "properties" : {
             "avatarURL" : {
@@ -31,5 +34,4 @@
         }
       }
     }
-  }
 }

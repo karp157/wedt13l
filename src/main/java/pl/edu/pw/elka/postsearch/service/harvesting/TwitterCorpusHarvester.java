@@ -111,15 +111,15 @@ public class TwitterCorpusHarvester implements Harvester<Posts> {
         LOG.debug("Harvesting data: {}", postData);
         final String postDataAfterDecoding = StringEscapeUtils.unescapeHtml(postData);
         final String[] parts = postDataAfterDecoding.split("\t");
-        Validator.assertTrue(parts.length == 11,
-                "There should be exactly 11 parts of harvested post.");
+        Validator.assertTrue(parts.length == 12,
+                "There should be exactly 12 parts of harvested post.");
         Post post;
         try {
             post = new Post(readCreationDate(parts[0]),
                     Long.parseLong(parts[1]),
-                    new User(parts[2], parts[8]),
-                    parts[3],
-                    parts[6]);
+                    new User(parts[2], parts[9]),
+                    parts[4],
+                    parts[7]);
         } catch (ParseException | NumberFormatException e) {
             throw new InvalidPostException(e.getMessage());
         }

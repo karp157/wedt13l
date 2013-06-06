@@ -1,15 +1,31 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="spring" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%--Komunikat do wynikow--%>
-<c:if test="${not empty postsPage}">
+
+<c:if test="${not empty suggestion}">
     <div class="row">
         <div class="span3"></div>
-        <div class="span5 alert alert-info post-search-alert fade in">
-            Liczba wyników: ${postsPage.totalElements}
+        <div class="span5 alert alert-danger post-search-alert fade in">
+            Czy chodziło o: <a href="?query=${suggestion}">${suggestion}</a> ?
             <button type="button" class="close" data-dismiss="alert">x</button>
         </div>
     </div>
 </c:if>
+
+<c:if test="${not empty postsPage}">
+    <div class="row">
+        <div class="span3"></div>
+        <div class="span5 alert alert-info post-search-alert fade in">
+            <c:if test="${not empty query}">
+                Zapytanie: ${query},
+            </c:if> Liczba wyników: ${postsPage.totalElements}
+            <button type="button" class="close" data-dismiss="alert">x</button>
+        </div>
+    </div>
+</c:if>
+
+
 
 <%--Wyniki--%>
 <div id="posts">
