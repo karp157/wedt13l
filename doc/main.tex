@@ -29,45 +29,66 @@
   \email{M.Wlazly@stud.elka.pw.edu.pl}}
 \maketitle
 \begin{abstract}
-Miejsce na abstrakt\ldots
-\keywords{wyszukiwarka postów, twitter, elasticsearch, WordNet}
+Niniejszy praca stanowi dokumentację projektu zrealizowanego w ramach przedmiotu
+\emph{Wstęp do Eksploracji Danych Tekstowych}.
+Celem było zaimplementowanie prostej wyszukiwarki tekstowej. Zrealizowany system
+zawiera podstawowe mechanizmy odporności na błędy w zapytaniach i treści postów
+oraz uwzględnia niejednoznaczności słów. 
+
+\keywords{wyszukiwarka postów, twitter, elasticsearch, spring, spring-data, WordNet}
 \end{abstract}
 
-Celem projektu była implementacja prostej wyszukiwarki tekstowej. Wyszukiwarka
-zawierać podstawowe mechanizmy odporności na błędy w zapytaniach i treści postów
-oraz uwzględnia niejednoznaczności słów (homonimy, synomimy). 
-Aplikacja zrealizowana w ramach projektu posiada intuicyjny
-i prosty interfejs przeglądarkowy.
+W ramach projektu zrealizowane została wyszukiwarka postów Twittera 
+z wykorzystaniem indeksera tekstowego opartego na silniku Lucene. Dokumentacja 
+składa się z % TODO dokończyć
 
-W ramach projektu zrealizowane zostało wyszukiwanie postów Twittera 
-z wykorzystaniem indeksera tekstowego opartego na silniku Lucene.
+\section{Korpus tekstowy}
+\label{sec:korpus-tekstowy}
+
+Korpus tekstowy wykorzystany w ramach projektu składa się z dwóch zbiorów wiadomości tweeter \footnote{\url{http://an.kaist.ac.kr/~haewoon/release/twitter_tweets/}}: 
+\begin{itemize}
+ \item zawierających w treści wystąpienia \emph{apple};
+ \item otagowane jako \verb #iranelection.
+\end{itemize}
+
+Każda wiadomość składa się z kilkunastu pól oddzielonych znakiem \verb 0x09  (\emph{ASCII horizontal tab}). W ramach
+projektu uwzględnione zostały:
+\begin{itemize}
+  \item data utworzenia wiadomości; 
+  \item nazwa użytkownika oraz jego awatar;
+  \item kod kraju autora wiadomości;
+  \item treść wiadomości.
+\end{itemize}
+
+Trzy pierwsze z wymienionych atrybutów przechowywane są wyłączenie w celu prezentacji wyników wyszukiwania 
+użytkownikowi. Pola te nie są również uwzględniane we wstępnej analizie przed indeksowaniem. Treść wiadomości 
+jest natomiast indeksowana w postaci wynikowej przygotowanej przez analizator systemu. 
 
 \section{Wykorzystane narzędzia}
 \label{sec:wykorzystane-narzedzia}
 
-Projekt został zaimplementowany w języku Java.
+\subsection{Elasticsearch}
 
-W ramach tego projektu opracowana została aplikacja webowa z wykorzystaniem 
-technologii JEE. Zastosowano szkielet aplikacyjny Spring Framework, w
-szczególności:
-w warstwie prezentacji: 
-Spring Web MVC oraz Apache Tiles, widoki użytkownika generowane są z plików JSP;
-w warstwie dostępu do danych (przechowywanych w indekserze):
-Zastosowano narzędzie Spring Data, które umożliwia przygotowanie abstrakcji 
-repozytorium danych. W Spring Data  nie ma potrzeby pisania własnych zapytań
-(np. obiektów w formacie JSON do indeksera) - zapytania  są przygotowywane
-automatycznie na podstawie nazw metod interfejsu repozytorium.  Spring Data może
-być również zastosowany m.in. w relacyjnych oraz grafowych bazach danych.
+W ramach projektu zastosowano indekser \textbf{elasticsearch}. Działa on jako całkowicie 
+niezależna usługa w systemie, nie ma więc konieczności jego uruchamiania w
+serwerze aplikacyjnym  (jak jest to np. w Solr).
 
-Elasticsearch
+Podstawę działania tego narzędzia stanowi biblioteka Lucene. Instancja elasticsearch nazywana 
+jest \textbf{węzłem} i może ona zawierać jeden lub wiele indeksów.
+Jeden indeks elasticsearch składa się z:
+\begin{itemize}
+  \item jednego głównego fragmentu indeksu (ang. \emph{primary shard});
+  \item jednej lub wielu replik głównego fragmentu indeksu (ang. \emph{replica shard}).
+\end{itemize}
+Każdy fragment indeksu elasticsearch jest \textbf{jednym indeksem Lucene}. Dzięki temu możliwa jest realizacja 
+systemu niezawodnościowego - w przypadku awarii głównego fragmentu indeksu automatycznie wybierana jest jedna 
+z jego replik. 
 
-W ramach projektu zastosowano indekser Elasticsearch. Podstawę działania tego
-narzędzia stanowi biblioteka Lucene. Elasticsearch działa jako całkowicie 
-niezależna usługa w systemie, nie ma więc konieczności jego  uruchmiania w
-serwerze aplikacyjnym  (jak jest to np. w Solr). Komunikacja  między indekserem
+Komunikacja  między indekserem
 a aplikacją odbywa się poprzez interfejs REST-owy, za pomocą  komunikatów
-zapisanych w formacie JSON. W szczególności, dokumenty zapisywane  do indeksu
-muszą być obiektami zgodnymi z tą notacją.
+zapisanych w formacie JSON (stanowi on DSL \footnote{język dziedzinowy ang. Domain Specific Language} elasticsearch'a).
+W szczególności, dokumenty zapisywane  do indeksu muszą być obiektami zgodnymi z tą notacją. 
+
 Elasticsearch posiada wiele innowacyjnych rozwiązań,  wynikających z bardzo
 dużej liczby wtyczek (plugin’s) przygotowywanych przez  deweloperów z całego
 świata. Szczególną ciekawą funkcją tego narzędzia są perkolacje  -  możliwe jest
@@ -77,11 +98,29 @@ znalezienia wszystkich zapisanych fraz, które  są relewantne dla wprowadzonego
 dokumentu. W ten sposób można np. w prosty sposób wykonać  klasyfikację
 dokumentów wprowadzanych przez użytkowników systemu.
 
+\spring{Spring framework}
+
+W ramach tego projektu opracowana została aplikacja webowa z wykorzystaniem 
+technologii JEE. Zastosowano szkielet aplikacyjny Spring Framework, w
+szczególności:
+\begin{description}
+\item [w warstwie prezentacji] \\ 
+Spring Web MVC oraz Apache Tiles, widoki użytkownika generowane są z plików JSP;
+\item [w warstwie dostępu do danych (przechowywanych w indekserze)] \\
+w warstwie dostępu do danych (przechowywanych w indekserze):
+Narzędzie spring-data, które umożliwia przygotowanie abstrakcji 
+repozytorium danych. W Spring Data  nie ma potrzeby pisania własnych zapytań
+(np. obiektów w formacie JSON do indeksera) -- zapytania  są przygotowywane
+automatycznie \textbf{wywnioskowywane} z nazw metod interfejsu repozytorium. Spring-data może
+być również zastosowany m.in. w relacyjnych oraz grafowych bazach danych. Istotną
+wadą tego narzędzia jest intensywne używanie refleksji języka Java -- powoduje to 
+znaczny spadek wydajności systemu (w przyszłości ma być użyty mechanizm \verb MethodHandle  dostępny 
+dla java 1.7).
+\end{description}
+
 \section{Indeksowanie danych wejściowych}
 \label{sec:indeksowanie-danych-wejsciowych}
-W ramach projektu wykorzystany został korpus tekstowy, który składa się z dwóch
-zbiorów postów z portalu Twitter, dotyczących różnych tematyk\footnote{
-\url{http://an.kaist.ac.kr/~haewoon/release/twitter_tweets/}}.
+W ramach projektu wykorzystany został korpus tekstowy opisany w rozdziale \ref{sec:korpus-tekstowy}.
 
 Posty niezapisane w języku angielskim nie są uwzględniane w dalszym
 przetwarzaniu. 
@@ -124,7 +163,7 @@ były:
 
 Kolokacje niezbędne są do określania kontekstu występowania danego słowa. 
 Uwzględniane są w momencie wykonywania zapytania: jeżeli podana fraza zawiera
-wystąpienie jakiegoś ciągu słów, który  prawdpodobnie jest kolokacją, nie są
+wystąpienie jakiegoś ciągu słów, który prawdpodobnie jest kolokacją, nie są
 dla niego uwzględniane m.in. synonynimy poszczególnych cześci składowych.
 
 \section{Wyszukiwanie informacji w indeksach}
@@ -181,7 +220,7 @@ Jest to ciekawy szkielet aplikacyjny stanowiący alternatywę dla biblioteki
 JUnit. Umożliwia on elastyczną konfigurację testów, wykorzystuje się go przy
 pomocy adnotacji Java.
  
- \subsection{Testy jakościowe}
+\subsection{Testy}
  Testy jakościowe - wybrane posty zostały wstępnie ręcznie przeczytane i 
   zapisane zostały wystąpienia słów oraz synonimów zawartych w testowych
   postach.
