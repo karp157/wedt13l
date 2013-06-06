@@ -48,8 +48,9 @@ składa się z % TODO dokończyć
 Korpus tekstowy wykorzystany w ramach projektu składa się z dwóch zbiorów wiadomości tweeter \footnote{\url{http://an.kaist.ac.kr/~haewoon/release/twitter_tweets/}}: 
 \begin{itemize}
  \item zawierających w treści wystąpienia \emph{apple};
- \item otagowane jako \verb #iranelection.
+ \item otagowane jako \verb #iranelection  .
 \end{itemize}
+Uwzględnione zostały wiadomości tylko w języku angielskim.
 
 Każda wiadomość składa się z kilkunastu pól oddzielonych znakiem \verb 0x09  (\emph{ASCII horizontal tab}). W ramach
 projektu uwzględnione zostały:
@@ -86,7 +87,7 @@ z jego replik.
 
 Komunikacja  między indekserem
 a aplikacją odbywa się poprzez interfejs REST-owy, za pomocą  komunikatów
-zapisanych w formacie JSON (stanowi on DSL \footnote{język dziedzinowy ang. Domain Specific Language} elasticsearch'a).
+zapisanych w formacie JSON (stanowi on DSL \footnote{język dziedzinowy, ang. Domain Specific Language} elasticsearch'a).
 W szczególności, dokumenty zapisywane  do indeksu muszą być obiektami zgodnymi z tą notacją. 
 
 Elasticsearch posiada wiele innowacyjnych rozwiązań,  wynikających z bardzo
@@ -98,84 +99,81 @@ znalezienia wszystkich zapisanych fraz, które  są relewantne dla wprowadzonego
 dokumentu. W ten sposób można np. w prosty sposób wykonać  klasyfikację
 dokumentów wprowadzanych przez użytkowników systemu.
 
-\spring{Spring framework}
+\subsection{Spring framework}
 
-W ramach tego projektu opracowana została aplikacja webowa z wykorzystaniem 
-technologii JEE. Zastosowano szkielet aplikacyjny Spring Framework, w
-szczególności:
-\begin{description}
-\item [w warstwie prezentacji] \\ 
-Spring Web MVC oraz Apache Tiles, widoki użytkownika generowane są z plików JSP;
-\item [w warstwie dostępu do danych (przechowywanych w indekserze)] \\
-w warstwie dostępu do danych (przechowywanych w indekserze):
-Narzędzie spring-data, które umożliwia przygotowanie abstrakcji 
-repozytorium danych. W Spring Data  nie ma potrzeby pisania własnych zapytań
-(np. obiektów w formacie JSON do indeksera) -- zapytania  są przygotowywane
-automatycznie \textbf{wywnioskowywane} z nazw metod interfejsu repozytorium. Spring-data może
-być również zastosowany m.in. w relacyjnych oraz grafowych bazach danych. Istotną
-wadą tego narzędzia jest intensywne używanie refleksji języka Java -- powoduje to 
-znaczny spadek wydajności systemu (w przyszłości ma być użyty mechanizm \verb MethodHandle  dostępny 
-dla java 1.7).
-\end{description}
-
+W ramach tego projektu opracowana została aplikacja webowa z
+wykorzystaniem technologii JEE. Zastosowano szkielet aplikacyjny
+Spring Framework, w szczególności:
+\begin{itemize}
+\item \textbf{w warstwie prezentacji} -- Spring Web MVC oraz Apache
+  Tiles, widoki użytkownika generowane są z plików JSP;
+\item \textbf{w warstwie dostępu do danych (przechowywanych w
+    indekserze)} -- narzędzie spring-data, które umożliwia
+  przygotowanie abstrakcji repozytorium danych. W Spring Data nie ma
+  potrzeby pisania własnych zapytań (np. obiektów w formacie JSON do
+  indeksera) -- zapytania są przygotowywane automatycznie
+  \textbf{wywnioskowywane} z nazw metod interfejsu
+  repozytorium. Spring-data może być również zastosowany m.in. w
+  relacyjnych oraz grafowych bazach danych. Istotną wadą tego
+  narzędzia jest intensywne używanie refleksji języka Java -- powoduje
+  to znaczny spadek wydajności systemu (w przyszłości ma być użyty
+  mechanizm \verb MethodHandle  dostępny dla java 1.7).
+\end{itemize}
 \section{Indeksowanie danych wejściowych}
 \label{sec:indeksowanie-danych-wejsciowych}
-W ramach projektu wykorzystany został korpus tekstowy opisany w rozdziale \ref{sec:korpus-tekstowy}.
+W ramach projektu wykorzystany został korpus tekstowy opisany w
+rozdziale \ref{sec:korpus-tekstowy}.
 
-Posty niezapisane w języku angielskim nie są uwzględniane w dalszym
-przetwarzaniu. 
-Do rozpoznawanie  języka w jakim zostały napisane posty zastosowano
-odpowiednie rozszerzenie dla elasticsearch,  przeznaczone do identyfikacji
-języka tekstu
-\footnote{\url{https://github.com/jprante/elasticsearch-langdetect}}.
-
-Dane, przed zaindeksowaniem, zostały oczyszczone z nieistotnych elementów (z
-punktu widzenia realizacji wyszukiwania), takich jak odnośniki do  zdjęć czy
-zewnętrznych stron. Ponadto poddane zostały działaniu elementów standardowego
-analizatora Lucene, tj:
+Dane, przed zaindeksowaniem, zostały oczyszczone z nieistotnych
+elementów (z punktu widzenia realizacji wyszukiwania), takich jak
+odnośniki do zdjęć czy zewnętrznych stron (tak, aby nie były
+uwzględniane w dalszej analizie). Ponadto poddane one zostały działaniu
+elementów standardowego analizatora Lucene, tj:
 \begin{itemize}
-  \item standardowy tokenizer implementujący algorytm segmentacji tekstu Unicode
-  (Unicode Text Segmentation algorithm)
-  \item filtr dla stop words
-  \item filtr zmieniający litery na małe
-  \item filtr normalizujący tokeny
+\item standardowy tokenizer implementujący algorytm segmentacji tekstu
+  Unicode (Unicode Text Segmentation algorithm) uzupełniony o ignorowanie
+  adresów url oraz email (\emph{uax\_url\_email tokenizer}). 
+\item filtr \emph{stop words} dla języka angielskiego;
+\item filtr zmieniający litery na małe;
+\item filtr normalizujący tokeny.
+
 \end{itemize}
 Dodatkowo, zastosowane zostały następujące filtry tokenów:
 \begin{itemize}
-  \item stemmer dla języka angielskiego
-  \item filtr do przygotowywania bigramów z danych wejściowych (shingle filter z
-  biblioteki Lucene)
-  \item filtr uwzględniający synonimy wyrazów
+\item stemmer dla języka angielskiego;
+\item filtr do przygotowywania bigramów z danych wejściowych (shingle
+  filter z biblioteki Lucene);
+\item filtr uwzględniający synonimy wyrazów.
 \end{itemize}
 
 Aby skorzystać z tego ostatniego, konieczne było przygotowanie pliku z
-synonimami w formacie akceptowalnym przez Solr. Niezbędne było więc skorzystanie
-ze słownika języka angielskiego.
+synonimami w formacie akceptowalnym przez Solr. Niezbędne było więc
+skorzystanie ze słownika języka angielskiego.
 
-W ramach projektu wykorzystane zostały dane z  Wordnet-u
-\footnote{\url{http://wordnet.princeton.edu/}}, który jest leksykalną bazą
-danych języka Angielskiego. Z punktu widzenia projektu szczególnie interesujące
-były:
+W ramach projektu wykorzystane zostały dane z Wordnet-u
+\footnote{\url{http://wordnet.princeton.edu/}}, który jest leksykalną
+bazą danych języka Angielskiego. Z punktu widzenia projektu
+szczególnie interesujące były:
 \begin{itemize}
-  \item synonimy (niezbędne dla wskazanego wcześniej filtru analizatora)
-  \item dane do aprawdzania treści zapytań
+\item synonimy (niezbędne dla wskazanego wcześniej filtru analizatora);
+\item dane do sprawdzania treści zapytań.
 \end{itemize}
 
-Kolokacje niezbędne są do określania kontekstu występowania danego słowa. 
-Uwzględniane są w momencie wykonywania zapytania: jeżeli podana fraza zawiera
-wystąpienie jakiegoś ciągu słów, który prawdpodobnie jest kolokacją, nie są
-dla niego uwzględniane m.in. synonynimy poszczególnych cześci składowych.
+Elasticsearch umożliwia zastosowanie informacji bezpośrednio  
+z Wordnet-u, jednak w związku z błędem występującym w indekserze (nie wszystkie postacie są 
+obecnie akceptowane przez elasticsearch) dane te zostały skonwertowane do postaci zgodnej ze składnią
+Solr.
 
 \section{Wyszukiwanie informacji w indeksach}
 \label{sec:wyszukiwanie-informacji-w-indeksach}
 Zarówno indeksowane dokumenty, jak i zapytania zostały poddane działaniu tych
 samych analizatorów Lucene.
-Do obsługi błędów w zapytaniach  wykorzystano suggester termów (nowa
+Do obsługi błędów w zapytaniach wykorzystano suggester termów \footnote{nowa
 funkcjonalność elasticsearch’a, ciągle jeszcze w fazie beta:
-\url{http://www.elasticsearch.org/guide/reference/api/search/suggest/}), który
-na podstawie podanej frazy oraz na podstawie zaindeksowanych  postów podaje
-sugestie dla prawdopodobnie błędnych wyrazów, tj. słowa  z dokumentów
-przechowywanych w indeksie najbliższe do podanego ciągu wyrazów. Np.  dla frazy
+\url{http://www.elasticsearch.org/guide/reference/api/search/suggest/}}, który
+na podstawie podanej frazy oraz na podstawie zaindeksowanych postów podaje
+sugestie dla prawdopodobnie błędnych wyrazów, tj. słowa z dokumentów
+przechowywanych w indeksie najbliższe do podanego ciągu wyrazów. Np. dla frazy
 “spatła kedytu” użytkownik otrzyma informację, iż prawdopodobnie chodziło mu o
 frazę “spłata kredytu”.
 
@@ -185,73 +183,65 @@ Dla każdego wyrazu, który jest z prawdopodobnie błędny, uwzględniona jest
 propozycja od suggester’a. To, czy dane słowo zostało uznane za błędne,
 wyznacza wartość progowa odległości słowa z zapytania do  proponowanego przez
 suggester wyrazu. Parametr ten został ustalony  w trakcie eksperymentowania z
-wyszukiwaniem zaindeksowanych danych. 
+wyszukiwaniem zaindeksowanych danych i wynosi $0.5$. 
 
 %TODO zrobiliśmy to poniżej?
 %Docelowo chcemy wyeliminować typowe błędy (literówki)  jeszcze przed
 % zaindeksowaniem oryginalnego tekstu.
 
-W celu zaakcentowania wystąpień wpisanej frazy w wynikach wyszukiwania,  w
-ramach projektu zastosowany został highlighting dostępny w indekserze
-elasticsearch.
-
 Użytkownik końcowy ma możliwość wpisania frazy do wyszukiwania w
 specjalnie przygotowanym do tego formularzu. W odpowiedzi wyświetlana jest lista
 pasujących do zapytania postów. Wyniki wyszukiwania jest stronicowana, tj.
 na jednej stronie będzie można wyświetlić pewną określoną,  maksymalną liczbę
-wyników. Do stronicowania została wykorzystana technologia AJAX dzięki czemu
+wyników. Do stronicowania została wykorzystana technologia AJAX, dzięki czemu
 posty wczytują się dynamicznie, a użytkownik nie musi za każdym razem
 przeładowywać strony. Każdy wynik wyszukiwania zawiera:
-treść postu, datę utworzenia oraz nazwę autora.  Możliwe jest również
-posortowanie otrzymanych dokumentów wg r elewantności dokumentu lub daty jego
-utworzenia w serwisie Twitter.
+treść postu, awatar oraz nazwę autora. Dane są wyświetlane rosnąco wg wagi 
+\verb tf-idf  .
 
 \section{Metody testowania}
 \label{sec:metody-testowania}
 
-Do testów zostały wykorzystane wyselekcjonowane posty pobrane z portalu
-\url{twitter.com}.
-Na danych testowych przeprowadzone zostały testy jakości wyszukiwania oraz testy
-wydajnościowe. Testy wykonane na stowrzonej aplikacji zostały zaprezentowane w
-kolejnych podrozdziałach:
+W ramach projektu zaindeksowano 85252 wiadomości, zarówno z korpusu tekstowego
+(przedstawionego w \ref{sec:korpus-tekstowy}) jak i portalu \url{twitter.com}. 
+Na danych testowych przeprowadzone zostały testy jakości wyszukiwania. 
+Wykonane testy zostały zaprezentowane w kolejnych podrozdziałach:
 \subsection{Testy jednostkowe}
 Testy jednostkowe zostały przeprowadzone z wykorzystaniem framework’a TestNG.
 Jest to ciekawy szkielet aplikacyjny stanowiący alternatywę dla biblioteki
 JUnit. Umożliwia on elastyczną konfigurację testów, wykorzystuje się go przy
 pomocy adnotacji Java.
  
-\subsection{Testy}
- Testy jakościowe - wybrane posty zostały wstępnie ręcznie przeczytane i 
-  zapisane zostały wystąpienia słów oraz synonimów zawartych w testowych
-  postach.
-	Sprawdzenie skuteczności polegało na użyciu wyszukiwarki na  tych testowych
-	postach i porównaniu wyników wyszukiwania z wynikami powstałymi  na skutek
-	ręcznego przeglądania postów. W wyniku tych testów zostały policzone  metryki
-	precision oraz  recall. Policzone ze wzorów:
-  
+\subsection{Testy jakościowe}
+%  Testy jakościowe - wybrane posty zostały wstępnie ręcznie przeczytane i 
+%   zapisane zostały wystąpienia słów oraz synonimów zawartych w testowych
+%   postach.
+% 	Sprawdzenie skuteczności polegało na użyciu wyszukiwarki na  tych testowych
+% 	postach i porównaniu wyników wyszukiwania z wynikami powstałymi  na skutek
+% 	ręcznego przeglądania postów. W wyniku tych testów zostały policzone  metryki
+% 	precision oraz recall. Policzone ze wzorów:
+% \begin{equation}
+% 	precision = \frac{TA}{TA + FA}
+% \end{equation}
+% \begin{equation}
+% 	recall = \frac{TA}{TA + FB}
+% \end{equation}
+% Gdzie: 
 
-\begin{equation}
-	precision = \frac{TA}{TA + FA}
-\end{equation}
-\begin{equation}
-	recall = \frac{TA}{TA + FB}
-\end{equation}
-Gdzie: 
-
-	$TA$: posty poprawnie zakwalfikowane do klasy $A$
+% 	$TA$: posty poprawnie zakwalfikowane do klasy $A$
 	
-	$FA$: posty niepoprawnie zakwalfikowane do klasy $A$
+% 	$FA$: posty niepoprawnie zakwalfikowane do klasy $A$
 	
-	$TB$: posty poprawnie zakwalfikowane do klasy $B$
+% 	$TB$: posty poprawnie zakwalfikowane do klasy $B$
 	
-	$FB$: posty niepoprawnie zakwalfikowane do klasy $B$
+% 	$FB$: posty niepoprawnie zakwalfikowane do klasy $B$
 	
-Precyzja (\textit{ang.} Precision)  określa jaka część obiektów
-zaklasyfikowanych pozytywnie, jest taka  w rzeczywistości. Innymi słowy jest to
-prawdopodobieństwo tego, że obiekt faktycznie jest  pozytywny, jeśli został
-uznany jako taki przez system.
-Zupełność, kompletność (\textit{ang.} Recall) Jest to miara odpowiadająca na
-pytanie, jaką część faktycznie pozytywnych obiektów, system zaklasyfikował poprawnie.
+% Precyzja (\textit{ang.} Precision)  określa jaka część obiektów
+% zaklasyfikowanych pozytywnie, jest taka  w rzeczywistości. Innymi słowy jest to
+% prawdopodobieństwo tego, że obiekt faktycznie jest  pozytywny, jeśli został
+% uznany jako taki przez system.
+% Zupełność, kompletność (\textit{ang.} Recall) Jest to miara odpowiadająca na
+% pytanie, jaką część faktycznie pozytywnych obiektów, system zaklasyfikował poprawnie.
 
 W ostateczności nie zdecydowaliśmy się na próby  obliczania miar poprawności
 takich jak precyzja czy zupełność. Byłoby to  wyjątkowo trudnym zadaniem, biorąc
@@ -265,7 +255,29 @@ zdecydowanie nieakceptowalny. Z drugiej strony  ograniczenie zbioru testowego do
 wielkości umożliwiającej zapanowanie nad testami bardzo zmniejszyłoby
 dokładność.
 
- 
+W związku z tym przeprowadzone zostały testy dla wybranych zapytań.
+
+\newpage
+\textbf{Testy poprawności wyszukiwania}\\
+
+\begin{enumerate}
+\item Wyszukiwanie proste, fraza wejściowa: \emph{apple juice}.\\
+   Liczba wszystkich wyników: 2907. 
+   Najbardziej relewantny wynik (tf-idf =  3.0314815):  
+   \emph{Strawberry Kiwi Apple juice and Campbell's chunky soup for breakfast!  Yummy!}
+
+\item Uwzględnienie synonimów, fraza wejściowa: \emph{apple succus} (bardzo rzadko występujący synonim \emph{juice}).\\
+  Liczba wszystkich wyników: 2012.
+  Najbardziej relewantny wynik (tf-idf = 2.4052076):
+  \emph{Strawberry Kiwi Apple juice and Campbell's chunky soup for breakfast!  Yummy!}
+
+\item Uwzględnienie synonimów oraz stemming, fraza wejściowa: \emph{apples headphone} (bardzo rzadko występujący synonim \emph{juice}).\\
+  Liczba wszystkich wyników: 2012.
+  Najbardziej relewantny wynik (tf-idf = 2.4052076):
+  \emph{Strawberry Kiwi Apple juice and Campbell's chunky soup for breakfast!  Yummy!}
+
+\end{enumerate}
+   
 
 \subsection{Testy wydajnościowe}
 Testy wydajnościowe miały zostać przeprowadzone  za pomocą frameworka The
